@@ -42,12 +42,10 @@ export const logoutUserController = async (req, res, next) =>{
         next(error)
     };
 };
-export const githubResponseController = async(req, res, next)=>{
-    try {
-        const { firstName, lastName, email, role, isGithub } = req.user;
-        console.log(firstName)
-        res.json('/views/profile')
-    } catch (error) {
-        next(error);
-    };
-};
+// export const githubResponseController = async(req, res, next)=>{
+//     try {
+//         res.json('/views/profile')
+//     } catch (error) {
+//         next(error);
+//     };
+// };

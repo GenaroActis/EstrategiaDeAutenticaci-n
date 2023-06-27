@@ -9,6 +9,7 @@ const addProduct = async (prodId) =>{
         if (response.ok) {
             await response.json();
         } else {
+            window.location.href = '/views/login'
             throw new Error('Error en la solicitud');
         }
     } catch (error) {

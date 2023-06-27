@@ -6,6 +6,7 @@ import {
     updateQuantityOfProductController,
     deleteAllProductsToCartController
 } from '../controllers/cartController.js';
+import { ensureAuthenticated } from '../middlewares/ensureAuthenticated.js'
 
 const router = Router();
 

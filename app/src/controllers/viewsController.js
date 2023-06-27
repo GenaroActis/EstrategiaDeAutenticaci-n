@@ -12,40 +12,36 @@ export const getAllProductsController = async (req, res, next) =>{
         const nextLink = allProducts.hasNextPage ? `http://localhost:8080/products?page=${allProducts.nextPage}` : null
         const prevLink = allProducts.hasPrevPage ? `http://localhost:8080/products?page=${allProducts.prevPage}` : null
         const userId= req.session.passport.user
-        if(!userId){
-            res.redirect('/views/login')
-        }else {
-            const userData = await userDao.getUserById(userId)
-            const productsFile = {
-                results: allProducts.docs,
-                userData: userData,
-                info: {
-                    count: allProducts.totalDocs,
-                    pages: allProducts.totalPages,
-                    actualPage: allProducts.page,
-                    hasPrevPage: allProducts.hasPrevPage,
-                    hasNextPage: allProducts.hasNextPage,
-                    nextPageLink: nextLink,
-                    prevPageLink: prevLink
-                }
-            };
-            res.render('products', {productsFile});
-        }
+        const userData = await userDao.getUserById(userId)
+        const productsFile = {
+            results: allProducts.docs,
+            userData: userData,
+            info: {
+                count: allProducts.totalDocs,
+                pages: allProducts.totalPages,
+                actualPage: allProducts.page,
+                hasPrevPage: allProducts.hasPrevPage,
+                hasNextPage: allProducts.hasNextPage,
+                nextPageLink: nextLink,
+                prevPageLink: prevLink
+            }
+        };
+        res.render('products', {productsFile});
     } catch (error) {
         next(error)
     };
 };
 export const getCartController = async (req, res, next) =>{
     try {
-        const userId= req.session.passport.user
-        if(!userId){
+        if(!req.session.passport.user){
             res.redirect('/views/login')
         }else{
+            const userId= req.session.passport.user
             const userData = await userDao.getUserById(userId)
             const cartId = userData.cartId
             const cart = await cartDao.getCart(cartId);
             res.render('carts', {cart});
-        }
+        };
     } catch (error) {
         next(error)
     };
@@ -80,7 +76,12 @@ export const renderLoginErrorController = async(req, res, next) =>{
 };
 export const renderProfile = async(req, res, next) =>{
     try {
-        res.render('profile');
+        const userData = req.user
+        if(!userData){
+            res.redirect('/views/login')
+        }else{
+            res.render('profile', {userData});
+        };
     } catch (error) {
         next(error)
     };

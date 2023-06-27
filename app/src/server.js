@@ -15,7 +15,7 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import passport from 'passport';
 import './passport/github.js';
 import './passport/local.js';
-
+import { ensureAuthenticated } from './middlewares/ensureAuthenticated.js'
 
 const app = express();
 const port = 8080;
@@ -38,7 +38,6 @@ app.set('view engine', 'handlebars')
 app.set('views', path + '/views')
 
 app.use(cookieParser())
-
 app.use(session({
     secret: 'sessionKey',
     resave: false,
@@ -60,7 +59,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/products', productsRouter);
-app.use('/carts',  cartsRouter);
+app.use('/carts', cartsRouter);
 app.use('/user', usersRouter);
 app.use('/views', views);
 
