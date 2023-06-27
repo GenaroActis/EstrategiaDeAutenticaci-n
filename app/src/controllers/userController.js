@@ -17,14 +17,14 @@ export const createUserController = async (req, res, next) =>{
 };
 export const loginUserController = async (req, res, next) =>{
     try {
-        const userData = req.body
-        const cartId = req.session.cartId
+        const userId= req.session.passport.user
+        const userData = await userDao.getUserById(userId)
+        const cartId = userData.cartId;
         if(!cartId){
-            const createCart = await cartDao.createCart()
-            req.session.cartId = createCart._id
-            req.session.userData = validate
+            res.status(404).redirect('/views/register')
+        }else{
+            res.status(304).redirect('/views/products');
         }
-        res.status(304).redirect('/views/products');
     } catch (error) {
         next(error)
     };
@@ -44,8 +44,9 @@ export const logoutUserController = async (req, res, next) =>{
 };
 export const githubResponseController = async(req, res, next)=>{
     try {
-        console.log(req.session)
-        res.redirect('/views/profile')
+        const { firstName, lastName, email, role, isGithub } = req.user;
+        console.log(firstName)
+        res.json('/views/profile')
     } catch (error) {
         next(error);
     };

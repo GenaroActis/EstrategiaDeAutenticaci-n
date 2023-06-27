@@ -1,10 +1,10 @@
 import {UserModel} from './models/usersModel.js'
 import { createHash, isValidPassword } from '../../bcrypt.js';
-
 export default class UsersDaoMongoDB {
     async getUserByEmail(email){
         try {
-            const response = await UserModel.find({email});
+            console.log(email)
+            const response = await UserModel.findOne({email});
             if(!response) {
                 return false
             } else{

@@ -1,35 +1,35 @@
 import ProductsDaoMongoDB from "../daos/mongodb/productsDao.js";
 const prodDao = new ProductsDaoMongoDB();
 
-export const getAllProductsController = async (req, res, next) =>{
-    try {
-        const { page, limit, key, value, sortField, sortOrder } = req.query;
-        const allProducts = await prodDao.getAllProducts(page, limit, key, value, sortField, sortOrder);
-        const nextLink = allProducts.hasNextPage ? `http://localhost:8080/products?page=${allProducts.nextPage}` : null
-        const prevLink = allProducts.hasPrevPage ? `http://localhost:8080/products?page=${allProducts.prevPage}` : null
-        const userData = req.session.userData
-        // if(!userData){
-        //     res.redirect('/views/login')
-        // }else {
-            const productsFile = {
-                results: allProducts.docs,
-                userData: userData,
-                info: {
-                    count: allProducts.totalDocs,
-                    pages: allProducts.totalPages,
-                    actualPage: allProducts.page,
-                    hasPrevPage: allProducts.hasPrevPage,
-                    hasNextPage: allProducts.hasNextPage,
-                    nextPageLink: nextLink,
-                    prevPageLink: prevLink
-                }
-            };
-            res.render('products', {productsFile});
-        // }
-    } catch (error) {
-        next(error)
-    };
-};
+// export const getAllProductsController = async (req, res, next) =>{
+//     try {
+//         const { page, limit, key, value, sortField, sortOrder } = req.query;
+//         const allProducts = await prodDao.getAllProducts(page, limit, key, value, sortField, sortOrder);
+//         const nextLink = allProducts.hasNextPage ? `http://localhost:8080/products?page=${allProducts.nextPage}` : null
+//         const prevLink = allProducts.hasPrevPage ? `http://localhost:8080/products?page=${allProducts.prevPage}` : null
+//         const userData = req.session.userData
+//         // if(!userData){
+//         //     res.redirect('/views/login')
+//         // }else {
+//             const productsFile = {
+//                 results: allProducts.docs,
+//                 userData: userData,
+//                 info: {
+//                     count: allProducts.totalDocs,
+//                     pages: allProducts.totalPages,
+//                     actualPage: allProducts.page,
+//                     hasPrevPage: allProducts.hasPrevPage,
+//                     hasNextPage: allProducts.hasNextPage,
+//                     nextPageLink: nextLink,
+//                     prevPageLink: prevLink
+//                 }
+//             };
+//             res.render('products', {productsFile});
+//         // }
+//     } catch (error) {
+//         next(error)
+//     };
+// };
 export const getProductByIdController = async (req, res, next) =>{
     try {
         const {idSearched} = req.params;
@@ -78,7 +78,6 @@ export const updateProductController = async (req, res, next) =>{
         const {id} = req.params;
         const {title, description, price, stock, code} = req.body;
         const existingValidator = await prodDao.getProductById(id);
-        console.log(existingValidator)
         if (!existingValidator) {
             throw new Error('Product not found!');
         } else{

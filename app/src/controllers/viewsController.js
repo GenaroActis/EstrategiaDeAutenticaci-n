@@ -1,5 +1,7 @@
 import CartsDaoMongoDB from "../daos/mongodb/cartsDao.js";
 import ProductsDaoMongoDB from "../daos/mongodb/productsDao.js";
+import UsersDaoMongoDB from "../daos/mongodb/usersDao.js";
+const userDao = new UsersDaoMongoDB();
 const cartDao = new CartsDaoMongoDB();
 const prodDao = new ProductsDaoMongoDB();
 
@@ -9,7 +11,11 @@ export const getAllProductsController = async (req, res, next) =>{
         const allProducts = await prodDao.getAllProducts(page, limit, key, value, sortField, sortOrder);
         const nextLink = allProducts.hasNextPage ? `http://localhost:8080/products?page=${allProducts.nextPage}` : null
         const prevLink = allProducts.hasPrevPage ? `http://localhost:8080/products?page=${allProducts.prevPage}` : null
-        const userData = req.session.userData
+        const userId= req.session.passport.user
+        if(!userId){
+            res.redirect('/views/login')
+        }else {
+            const userData = await userDao.getUserById(userId)
             const productsFile = {
                 results: allProducts.docs,
                 userData: userData,
@@ -23,17 +29,20 @@ export const getAllProductsController = async (req, res, next) =>{
                     prevPageLink: prevLink
                 }
             };
-        res.render('products', {productsFile});
+            res.render('products', {productsFile});
+        }
     } catch (error) {
         next(error)
     };
 };
 export const getCartController = async (req, res, next) =>{
     try {
-        const cartId = req.session.cartId;
-        if(!cartId){
+        const userId= req.session.passport.user
+        if(!userId){
             res.redirect('/views/login')
         }else{
+            const userData = await userDao.getUserById(userId)
+            const cartId = userData.cartId
             const cart = await cartDao.getCart(cartId);
             res.render('carts', {cart});
         }

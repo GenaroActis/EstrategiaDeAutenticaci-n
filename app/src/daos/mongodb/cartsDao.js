@@ -16,6 +16,7 @@ export default class CartsDaoMongoDB {
             return response;
         } catch (error) {
             console.log(error);
+            throw new Error(error);
         };
     };
     async addProductToCart(prodId, cartId){

@@ -2,6 +2,8 @@ import { Strategy as GithubStrategy } from 'passport-github2';
 import passport from 'passport';
 import UserDao from '../daos/mongodb/usersDao.js';
 const userDao = new UserDao();
+import CartsDaoMongoDB from "../daos/mongodb/cartsDao.js";
+const cartDao = new CartsDaoMongoDB();
 
 const strategyOptions = {
     clientID : 'Iv1.9bc6eb5e06e707c9',
@@ -9,29 +11,31 @@ const strategyOptions = {
     callbackURL:'http://localhost:8080/views/github-profile'
 };
 
-const registerOrLogin = async(accesToken, refreshToken, profile, done) =>{
-    const email = profile._json.email 
-    let user = await userDao.getUserByEmail(email)
-    console.log('profile', email)
-    if(!user === []) {
+const registerOrLogin = async(accessToken, refreshToken, profile, done) => {
+    console.log('profile:::', profile);
+    const email = profile
+    const user = await userDao.getUserByEmail(email);
+    if(user) {
         return done(null, user)
-    }else{
-        user = await userDao.createUser({
-            firstName : profile._json.name.split('')[0],
-            lastName: profile._json.name.split('')[1],
+    }else {
+        const newCart = await cartDao.createCart()
+        const cartId = newCart._id
+        const newUser = await userDao.createUser({
+            firstName : profile._json.name.split(' ')[0],
+            lastName: profile._json.name.split(' ')[1],
             email: email,
             password: '',
-            isGithub: true
+            isGithub: true,
+            cartId: cartId
         });
-        return done(null, user)
+        return done(null, newUser)
     };
 };
 
-const githubStrategy = new GithubStrategy(strategyOptions, registerOrLogin)
-passport.use('github', githubStrategy);
+passport.use('github', new GithubStrategy(strategyOptions, registerOrLogin));
 
-export const frontResponseGithub = {
-    failureRedirect: '/views/register/Error',
-    successRedirect: '/views/github-profile',
-    passReqToCallback: true,
-};
+// export const frontResponseGithub = {
+//     failureRedirect: '/views/register/Error',
+//     successRedirect: '/views/github-profile',
+//     passReqToCallback: true,
+// };

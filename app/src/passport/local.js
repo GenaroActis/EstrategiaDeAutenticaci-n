@@ -1,5 +1,7 @@
 import UsersDaoMongoDB from "../daos/mongodb/usersDao.js";
 const userDao = new UsersDaoMongoDB();
+import CartsDaoMongoDB from "../daos/mongodb/cartsDao.js";
+const cartDao = new CartsDaoMongoDB();
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 
@@ -15,6 +17,9 @@ const signup = async (req, email, password, done)=>{
         if(findUser.length > 0){
             return done(null, false)
         }else{
+            const newCart = await cartDao.createCart()
+            const cartId = newCart._id
+            req.body.cartId = cartId
             const newUser = await userDao.createUser(req.body);
             if(!newUser){
                 return done(null, false);

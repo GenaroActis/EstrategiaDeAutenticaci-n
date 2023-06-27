@@ -1,19 +1,21 @@
 import express from 'express';
 import morgan from 'morgan';
-import Path from './path.js'
-import bodyParser from 'body-parser'
-import './db/db.js'
-import handlebars from 'express-handlebars'
-import MongoStore from 'connect-mongo'
+import Path from './path.js';
+import bodyParser from 'body-parser';
+import './db/db.js';
+import handlebars from 'express-handlebars';
+import MongoStore from 'connect-mongo';
 import cookieParser from 'cookie-parser';
-import productsRouter from './routes/productsRouter.js'
-import cartsRouter from './routes/cartRouter.js'
-import session from 'express-session'
-import usersRouter from './routes/userRouter.js'
-import views from './routes/viewsRouter.js'
+import productsRouter from './routes/productsRouter.js';
+import cartsRouter from './routes/cartRouter.js';
+import session from 'express-session';
+import usersRouter from './routes/userRouter.js';
+import views from './routes/viewsRouter.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 import passport from 'passport';
-import './passport/github.js'
-import './passport/local.js'
+import './passport/github.js';
+import './passport/local.js';
+
 
 const app = express();
 const port = 8080;
@@ -53,8 +55,10 @@ app.use(session({
 })
 );
 
+app.use(errorHandler)
 app.use(passport.initialize());
 app.use(passport.session());
+
 app.use('/products', productsRouter);
 app.use('/carts',  cartsRouter);
 app.use('/user', usersRouter);
